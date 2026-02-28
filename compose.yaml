@@ -1,0 +1,19 @@
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.76.0
+    ports:
+      - target: 16686
+        published: 16686
+    environment:
+      - COLLECTOR_OTLP_ENABLED: true
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.143.1
+    command: ["--config=/etc/otel/otel-collector-config.yaml"]
+    ports:
+      - target: 4317
+        published: 4317
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel/otel-collector-config.yaml
+    depends_on:
+      - jaeger
