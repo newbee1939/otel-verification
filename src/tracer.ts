@@ -3,12 +3,14 @@ import { resourceFromAttributes } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
 import { AlwaysOnSampler } from '@opentelemetry/sdk-trace-base';
+import { credentials } from '@grpc/grpc-js';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import FastifyOtelInstrumentation from '@fastify/otel';
 
 const traceExporter = new OTLPTraceExporter({
   url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? 'localhost:4317',
+  credentials: credentials.createInsecure(),
 });
 
 const sdk = new NodeSDK({
