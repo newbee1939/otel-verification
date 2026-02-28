@@ -18,11 +18,3 @@ npm run start:dev
 # Production
 npm run build && npm run start:prod
 ```
-
-## Test
-
-```bash
-npm run test        # unit
-npm run test:e2e    # e2e
-npm run test:cov    # coverage
-```
