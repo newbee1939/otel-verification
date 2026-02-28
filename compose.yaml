@@ -5,7 +5,7 @@ services:
       - target: 16686
         published: 16686
     environment:
-      COLLECTOR_OTLP_ENABLED: true
+      COLLECTOR_OTLP_ENABLED: "true"
 
   otel-collector:
     image: otel/opentelemetry-collector-contrib:0.143.1

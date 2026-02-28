@@ -15,6 +15,12 @@
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-fastify": "^11.1.14",
+    "@opentelemetry/auto-instrumentations-node": "^0.70.1",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.212.0",
+    "@opentelemetry/resources": "^2.5.1",
+    "@opentelemetry/sdk-node": "^0.212.0",
+    "@opentelemetry/sdk-trace-base": "^2.5.1",
+    "@opentelemetry/semantic-conventions": "^1.40.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1"
   },
