@@ -20,12 +20,13 @@ export class BookResolver {
   getBook(@Args('id', { type: () => Int }) id: number): Book | undefined {
     return tracer.startActiveSpan('getBook', (span) => {
       const book = this.books.find((b) => b.id === id);
-      if (!book) {
-        span.setStatus({ code: SpanStatusCode.ERROR, message: `Book not found: id=${id}` });
-      } else {
-        span.setStatus({ code: SpanStatusCode.OK });
-      }
-      span.end();
+      span.setStatus({ code: SpanStatusCode.ERROR, message: `Book not found: id=${id}` });
+      // if (!book) {
+      //   span.setStatus({ code: SpanStatusCode.ERROR, message: `Book not found: id=${id}` });
+      // } else {
+      //   span.setStatus({ code: SpanStatusCode.OK });
+      // }
+      // span.end();
       return book;
     });
   }
