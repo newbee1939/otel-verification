@@ -100,6 +100,42 @@ root span "request"           ← finalizeResponseSpanHook calls setStatus(OK) o
 
 For `GET /verify/app-error`, the app calls `trace.getActiveSpan()?.setStatus(ERROR)`, which targets the **child span**. Meanwhile `finalizeResponseSpanHook` calls `setStatus(OK)` on the **root span**. They target different objects, so the root span ends up as `OK` regardless of what the app sets.
 
+## Verifying `Span#setStatus()` Spec Non-Compliance
+
+### Background
+
+`@opentelemetry/sdk-trace-base` の `SpanImpl#setStatus()` は、[OTel Trace API 仕様の SetStatus セクション](https://opentelemetry.io/docs/specs/otel/trace/api/#set-status) で定められた複数のルールに準拠していません。
+
+- **[MUST 違反]** `Description` が `Ok` / `Unset` で無視されない
+- **[SHOULD 違反]** `Unset` への設定が無視されない
+- **[SHOULD 違反]** `Ok` が final として扱われない
+- **[SHOULD 違反]** Total Order（`Ok > Error > Unset`）が強制されない
+
+### How to Verify
+
+```bash
+npx ts-node scripts/verify-set-status.ts
+```
+
+期待される出力（v2.5.1 時点で 7 テスト中 5 件が FAIL）:
+
+```
+📋 Case 1: Ok should be final (SHOULD)
+  ❌ FAIL: setStatus(OK) then setStatus(ERROR) → should remain OK
+  ❌ FAIL: setStatus(OK) then setStatus(UNSET) → should remain OK
+
+📋 Case 2: Setting Unset should be ignored (SHOULD)
+  ❌ FAIL: setStatus(ERROR) then setStatus(UNSET) → should remain ERROR
+  ✅ PASS: setStatus(UNSET) on fresh span → should remain UNSET (no-op)
+
+📋 Case 3: Total Order enforcement (SHOULD)
+  ✅ PASS: setStatus(ERROR) then setStatus(OK) → should become OK (Ok > Error)
+
+📋 Case 4: Description MUST be ignored for Ok & Unset (MUST)
+  ❌ FAIL: setStatus(OK, message) → message should be dropped
+  ❌ FAIL: setStatus(UNSET, message) → message should be dropped
+```
+
 ## GraphQL
 
 The following operations are available at `http://localhost:3000/graphql`.
