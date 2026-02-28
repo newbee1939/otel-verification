@@ -1,5 +1,8 @@
 import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { SpanStatusCode, trace } from '@opentelemetry/api';
 import { Book } from './book.model';
+
+const tracer = trace.getTracer('book-resolver');
 
 @Resolver(() => Book)
 export class BookResolver {
@@ -15,7 +18,16 @@ export class BookResolver {
 
   @Query(() => Book, { nullable: true })
   getBook(@Args('id', { type: () => Int }) id: number): Book | undefined {
-    return this.books.find((b) => b.id === id);
+    return tracer.startActiveSpan('getBook', (span) => {
+      const book = this.books.find((b) => b.id === id);
+      if (!book) {
+        span.setStatus({ code: SpanStatusCode.ERROR, message: `Book not found: id=${id}` });
+      } else {
+        span.setStatus({ code: SpanStatusCode.OK });
+      }
+      span.end();
+      return book;
+    });
   }
 
   @Mutation(() => Book)
