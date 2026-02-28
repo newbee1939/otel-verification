@@ -2,7 +2,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
-import { SimpleSpanProcessor, ParentBasedSampler, TraceIdRatioBasedSampler, AlwaysOffSampler } from '@opentelemetry/sdk-trace-base';
+import { AlwaysOnSampler } from '@opentelemetry/sdk-trace-base';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import FastifyOtelInstrumentation from '@fastify/otel';
@@ -17,7 +17,7 @@ const sdk = new NodeSDK({
     [ATTR_SERVICE_VERSION]: process.env.OTEL_SERVICE_VERSION ?? '0.0.1',
   }),
   traceExporter,
-  sampler: new AlwaysOffSampler(),
+  sampler: new AlwaysOnSampler(),
   instrumentations: [
     new HttpInstrumentation(),
     new FastifyOtelInstrumentation({ registerOnInitialization: true }),
